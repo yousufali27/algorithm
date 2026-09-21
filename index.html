@@ -22,6 +22,7 @@
   <a href="#graph">Graph</a>
   <a href="#dp">DP</a>
   <a href="#hanoi">Hanoi</a>
+  <a href="#mcoloring">M-Coloring</a>
 </nav>
 
 <!-- ======================================================
@@ -31,7 +32,7 @@
   <div class="hero-content">
     <span class="hero-tag">★ Step-by-step visualization with C++ source</span>
     <h1>Watch Algorithms<br/><span class="gradient-text">Come to Life</span></h1>
-    <p>An interactive playground for the <strong>N-Queens</strong> problem and other classic algorithms — backtracking, sorting, graph traversal, dynamic programming and recursion, all beautifully visualized.</p>
+    <p>An interactive playground for the <strong>N-Queens</strong> problem and other classic algorithms — backtracking, sorting, graph traversal, M-coloring, dynamic programming and recursion, all beautifully visualized.</p>
     <div class="hero-chess">♛</div>
     <div>
       <a href="#nqueens" class="btn btn-primary">Start with N-Queens ↓</a>
@@ -544,6 +545,252 @@ for (int i = 1; i &lt;= m; i++)
 </section>
 
 <!-- ======================================================
+     M-COLORING GRAPH — Backtracking visualizer
+     ====================================================== -->
+<section class="section" id="mcoloring" data-algo="mcoloring">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="tag tag-pink">Graph Coloring · Backtracking</span>
+      <h2><span class="gradient-text">M-Coloring</span> of a Graph</h2>
+      <p>Given an undirected graph and <strong>M</strong> colors, color every vertex so that no two adjacent vertices share a color. We use recursive backtracking: try a color for vertex <em>v</em>, recurse on <em>v+1</em>, and backtrack when a dead-end is reached.</p>
+    </div>
+
+    <!-- Intro: 3 icon cards -->
+    <div class="mc-intro fade-up">
+      <div class="mc-intro-card">
+        <div class="mc-intro-icon">🎨</div>
+        <div class="mc-intro-title">M colors</div>
+        <div class="mc-intro-desc">Each vertex picks a color from <strong>1..M</strong>.</div>
+      </div>
+      <div class="mc-intro-card">
+        <div class="mc-intro-icon">🚫</div>
+        <div class="mc-intro-title">No same-color neighbors</div>
+        <div class="mc-intro-desc">Every edge must connect two <em>different</em> colors.</div>
+      </div>
+      <div class="mc-intro-card">
+        <div class="mc-intro-icon">♻️</div>
+        <div class="mc-intro-title">Try · backtrack · retry</div>
+        <div class="mc-intro-desc">Dead-end? Undo the last choice and try the next color.</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls fade-up">
+      <div class="sort-tabs">
+        <button class="sort-tab active mc-tab" data-graph="triangle">Triangle (K₃)</button>
+        <button class="sort-tab mc-tab" data-graph="square">4-Cycle (C₄)</button>
+        <button class="sort-tab mc-tab" data-graph="pentagon">Pentagon (C₅)</button>
+        <button class="sort-tab mc-tab" data-graph="star">Star (K₁,₄)</button>
+        <button class="sort-tab mc-tab" data-graph="complete5">K₅</button>
+        <button class="sort-tab mc-tab" data-graph="petersen">Petersen-like</button>
+      </div>
+
+      <div class="control-group">
+        <label>Colors (M):</label>
+        <select id="mc-m">
+          <option>2</option><option selected>3</option>
+          <option>4</option><option>5</option><option>6</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label>Chromatic Number:</label>
+        <span id="mc-chromatic" class="badge badge-violet">χ(G) = ?</span>
+      </div>
+
+      <div class="control-group">
+        <label>Speed:</label>
+        <input type="range" id="mc-speed" min="1" max="10" value="5" />
+      </div>
+
+      <button class="btn btn-primary" id="mc-play">▶ Play</button>
+      <button class="btn" id="mc-step">⏭ Step</button>
+      <button class="btn btn-danger" id="mc-reset">↻ Reset</button>
+      <button class="btn" id="mc-matrix-toggle">⊞ Matrix</button>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-value" id="mc-steps">0</div><div class="stat-label">Steps</div></div>
+        <div class="stat"><div class="stat-value" id="mc-backtracks">0</div><div class="stat-label">Backtracks</div></div>
+        <div class="stat"><div class="stat-value" id="mc-solutions">0</div><div class="stat-label">Solutions</div></div>
+      </div>
+    </div>
+
+    <!-- TOP ROW: Graph Canvas (left) + Step Narration (right) -->
+    <div class="mc-top fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">Graph Canvas</div>
+        <div class="graph-canvas-wrap"><canvas id="mc-canvas"></canvas></div>
+        <div class="graph-legend">
+          <span><span class="legend-dot" style="background:#7c3aed"></span>Current vertex</span>
+          <span><span class="legend-dot" style="background:#ef4444"></span>Conflict</span>
+          <span><span class="legend-dot" style="background:#10b981"></span>OK edge</span>
+          <span><span class="legend-dot" style="background:#fbbf24"></span>Pending</span>
+          <span><span class="legend-dot" style="background:#6b7280"></span>Uncolored</span>
+        </div>
+      </div>
+
+      <div class="glass-card mc-narration">
+        <div class="glass-card-title">Step-by-step Narration</div>
+        <div id="mc-narration-log" class="mc-narration-log">
+          <div class="mc-log-empty">Press <strong>▶ Play</strong> or <strong>⏭ Step</strong> to start the algorithm.</div>
+        </div>
+        <div class="mc-narration-footer">
+          <label class="mc-autoscroll-toggle">
+            <input type="checkbox" id="mc-autoscroll" checked /> Auto-scroll
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIDDLE ROW: Adjacency Matrix (left) + C++ Source (right) -->
+    <div class="mc-mid fade-up">
+      <div class="glass-card" id="mc-matrix-panel">
+        <div class="glass-card-title">Adjacency Matrix</div>
+        <div id="mc-matrix" class="mc-matrix"></div>
+        <p class="mc-matrix-hint">Each cell mirrors the color of its <strong>row vertex</strong>.</p>
+      </div>
+
+      <div class="glass-card">
+        <div class="glass-card-title">C++ Source · Backtracking</div>
+        <div class="code-panel"><pre></pre></div>
+      </div>
+    </div>
+
+    <!-- SOLUTIONS GALLERY (full width) -->
+    <div class="mc-solutions fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">
+          Solution Gallery
+          <span class="mc-gallery-count" id="mc-gallery-count">0 found</span>
+        </div>
+        <div class="mc-gallery-controls">
+          <button class="btn btn-sm" id="mc-gallery-prev">← Prev</button>
+          <button class="btn btn-sm btn-primary" id="mc-gallery-next">Next →</button>
+          <span class="mc-gallery-hint">Click any chip to apply that coloring.</span>
+        </div>
+        <div id="mc-solutions-list" class="mc-solutions-list">
+          <div class="mc-empty-gallery">No solutions yet — press Play!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Explanation + Practice Problems -->
+    <div class="two-col fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">How it Works</div>
+        <p style="color:var(--text-dim); font-size:15px;">
+          Backtracking assigns colors vertex-by-vertex. For each vertex <em>v</em>, we try every color from <strong>1..M</strong>:
+        </p>
+        <ul style="color:var(--text-dim); font-size:15px; padding-left:20px; margin-top:12px; line-height:1.9;">
+          <li><span class="tag tag-amber">trying</span> — colour under test (yellow)</li>
+          <li><span class="tag tag-green">safe</span> / <span class="tag" style="color:var(--red)">conflict</span> — checks against neighbors</li>
+          <li><strong>Place</strong> → recurse on next vertex</li>
+          <li><strong>Backtrack</strong> when no color works, or after recording a solution</li>
+        </ul>
+        <p style="color:var(--text-dim); font-size:14px; margin-top:16px;">
+          Worst-case time <code style="background:rgba(0,0,0,.3); padding:2px 6px; border-radius:4px;">O(M<sup>N</sup>)</code>.
+          For small <em>N</em> this is fine — N=14–17 is the practical limit. The famous <strong>Four-Color Theorem</strong> guarantees that any planar graph is 4-colorable.
+        </p>
+      </div>
+
+      <div class="glass-card problems">
+        <div class="glass-card-title">Practice Problems</div>
+
+        <div class="problem-card">
+          <div class="problem-meta">
+            <span class="tag tag-cyan">Easy</span>
+            <span class="tag">Bipartite</span>
+          </div>
+          <div class="problem-title">Problem 1: 2-Coloring a Bipartite Graph</div>
+          <div class="problem-desc">A graph is <em>bipartite</em> iff it is 2-colorable. How can BFS detect this in <code>O(V + E)</code> instead of backtracking?</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>Run BFS layer-by-layer — assign alternating colors <code>RED</code>, <code>BLUE</code> to each layer. If you ever reach an already-colored neighbor, the graph is not bipartite.</p>
+            <h5>Solution Sketch</h5>
+            <pre>
+bool isBipartite(int n, vector&lt;vector&lt;int&gt;&gt;&amp; g) {
+    vector&lt;int&gt; col(n, -1);
+    queue&lt;int&gt; q;
+    for (int s = 0; s &lt; n; s++) if (col[s] == -1) {
+        col[s] = 0; q.push(s);
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            for (int v : g[u])
+                if (col[v] == -1) { col[v] = 1 - col[u]; q.push(v); }
+                else if (col[v] == col[u]) return false;
+        }
+    }
+    return true;
+}</pre>
+            <p>Much faster than general M-coloring backtracking for the special case M = 2.</p>
+          </div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-meta">
+            <span class="tag tag-violet">Medium</span>
+            <span class="tag">Heuristic</span>
+          </div>
+          <div class="problem-title">Problem 2: Welsh–Powell Heuristic</div>
+          <div class="problem-desc">The Welsh–Powell heuristic is a greedy algorithm that often uses <em>fewer</em> colors than naive greedy. Implement it and compare with backtracking on the same graph.</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>Sort vertices by <strong>degree descending</strong>. Color them one at a time using the smallest available color that doesn't conflict with already-colored neighbors.</p>
+            <h5>Solution Sketch</h5>
+            <pre>
+int welshPowell(int n, vector&lt;pair&lt;int,int&gt;&gt;&amp; degAdj) {
+    vector&lt;int&gt; order(n);
+    iota(order.begin(), order.end(), 0);
+    sort(order.begin(), order.end(),
+         [&](int a, int b){ return degAdj[a].first &gt; degAdj[b].first; });
+    vector&lt;int&gt; col(n, -1);
+    int used = 0;
+    for (int v : order) {
+        if (col[v] != -1) continue;
+        int c = used++;
+        col[v] = c;
+        for (int u : order) if (col[u] == -1)
+            for (auto [w, _] : degAdj[u]) if (w == v || ...) ; // skip if conflicts
+        col[u] = c;
+    }
+    return used;
+}</pre>
+            <p>Welsh–Powell runs in O(V² log V) but is <em>not</em> guaranteed to find the chromatic number — it only gives an upper bound.</p>
+          </div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-meta">
+            <span class="tag tag-green">Hard</span>
+            <span class="tag">Theory</span>
+          </div>
+          <div class="problem-title">Problem 3: Four-Color Theorem</div>
+          <div class="problem-desc">Prove that every <strong>planar</strong> graph can be 4-colored. What about 3 colors? Which famous counter-example shows 3 is not enough?</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>Euler's formula V − E + F = 2 implies every planar graph has a vertex of degree ≤ 5. Combine that with the discharging method.</p>
+            <h5>Answer</h5>
+            <p>The <strong>Four-Color Theorem</strong> (Appel &amp; Haken, 1976) was the first major theorem proved by computer — they reduced infinitely many cases to ~1,936 that a computer checked. <strong>3 colors are not enough</strong>: the <em>K₄</em> (complete graph on 4 vertices, e.g., a triangle with a center) needs 4. Even simpler, an <em>odd cycle</em> like C₅ (pentagon) is not 3-colorable — try it on the visualizer above!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
      FOOTER
      ====================================================== -->
 <footer class="footer">
@@ -566,6 +813,7 @@ for (int i = 1; i &lt;= m; i++)
 <script src="js/graph.js"></script>
 <script src="js/dp.js"></script>
 <script src="js/hanoi.js"></script>
+<script src="js/mcoloring.js"></script>
 
 <script>
 /* =========================================================
@@ -606,7 +854,7 @@ for (int i = 1; i &lt;= m; i++)
 
   // Top nav active link on scroll
   const navLinks = document.querySelectorAll('.topnav a');
-  const sectionIds = ['hero', 'nqueens', 'sorting', 'graph', 'dp', 'hanoi'];
+  const sectionIds = ['hero', 'nqueens', 'sorting', 'graph', 'dp', 'hanoi', 'mcoloring'];
   const navObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
