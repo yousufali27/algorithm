@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Algorithm Visualizer · N-Queens & Beyond</title>
+  <meta name="description" content="Interactive step-by-step visualization for N-Queens, Sorting, Graph, DP and Tower of Hanoi — with C++ source code and inline practice problems." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<!-- ======================================================
+     TOP NAVIGATION
+     ====================================================== -->
+<nav class="topnav">
+  <a href="#hero" class="active">Home</a>
+  <a href="#nqueens">N-Queens</a>
+  <a href="#sorting">Sorting</a>
+  <a href="#graph">Graph</a>
+  <a href="#dp">DP</a>
+  <a href="#hanoi">Hanoi</a>
+</nav>
+
+<!-- ======================================================
+     HERO
+     ====================================================== -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <span class="hero-tag">★ Step-by-step visualization with C++ source</span>
+    <h1>Watch Algorithms<br/><span class="gradient-text">Come to Life</span></h1>
+    <p>An interactive playground for the <strong>N-Queens</strong> problem and other classic algorithms — backtracking, sorting, graph traversal, dynamic programming and recursion, all beautifully visualized.</p>
+    <div class="hero-chess">♛</div>
+    <div>
+      <a href="#nqueens" class="btn btn-primary">Start with N-Queens ↓</a>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     N-QUEENS — FLAGSHIP SECTION
+     ====================================================== -->
+<section class="section" id="nqueens" data-algo="nqueens">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="tag tag-violet">Backtracking · Classic</span>
+      <h2>The <span class="gradient-text">N-Queens</span> Problem</h2>
+      <p>Place N queens on an N×N chessboard so that no two queens attack each other. The solver uses recursive backtracking — every "try", "place" and "backtrack" step is animated.</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls fade-up">
+      <div class="control-group">
+        <label>N:</label>
+        <select id="nq-n">
+          <option>4</option><option>5</option><option>6</option><option>7</option>
+          <option selected>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="nq-play">▶ Play</button>
+      <button class="btn" id="nq-step">⏭ Step</button>
+      <button class="btn btn-danger" id="nq-reset">↻ Reset</button>
+      <div class="control-group">
+        <label>Speed:</label>
+        <input type="range" id="nq-speed" min="1" max="10" value="5" />
+      </div>
+      <div class="control-group">
+        <label><input type="checkbox" id="nq-show-all" /> Show all solutions</label>
+      </div>
+      <div class="control-group">
+        <label>Solution #:</label>
+        <input type="number" id="nq-solution-idx" min="1" max="92" value="1" style="width:60px;" />
+        <span id="nq-solution-idx-label">1</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-value" id="nq-steps">0</div><div class="stat-label">Steps</div></div>
+        <div class="stat"><div class="stat-value" id="nq-backtracks">0</div><div class="stat-label">Backtracks</div></div>
+        <div class="stat"><div class="stat-value" id="nq-total">? / 92</div><div class="stat-label">Solutions</div></div>
+      </div>
+    </div>
+
+    <!-- Board + Code panel -->
+    <div class="nqueens-layout fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">Chessboard</div>
+        <div class="board-wrap">
+          <div class="board"></div>
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="glass-card-title">C++ Source · Backtracking</div>
+        <div class="code-panel"><pre></pre></div>
+      </div>
+    </div>
+
+    <!-- Explanation + Problem set -->
+    <div class="two-col fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">How it Works</div>
+        <p style="color:var(--text-dim); font-size:15px;">
+          We place queens <strong>row by row</strong>. For each row, we try every column:
+        </p>
+        <ul style="color:var(--text-dim); font-size:15px; padding-left:20px; margin-top:12px; line-height:1.9;">
+          <li><span class="tag tag-amber">trying</span> — column under test (yellow)</li>
+          <li><span class="tag tag-green">safe</span> / <span class="tag" style="color:var(--red)">under attack</span> — conflict check</li>
+          <li><strong>Place</strong> queen → recurse on next row</li>
+          <li><strong>Backtrack</strong> if no valid column exists in a row</li>
+        </ul>
+        <p style="color:var(--text-dim); font-size:14px; margin-top:16px;">
+          Time complexity: <code style="background:rgba(0,0,0,.3); padding:2px 6px; border-radius:4px;">O(N!)</code> worst case
+          · Space: <code style="background:rgba(0,0,0,.3); padding:2px 6px; border-radius:4px;">O(N)</code> for the recursion stack.
+        </p>
+      </div>
+
+      <div class="glass-card problems">
+        <div class="glass-card-title">Practice Problems</div>
+
+        <div class="problem-card">
+          <div class="problem-meta">
+            <span class="tag tag-cyan">Easy</span>
+            <span class="tag">Bitmask</span>
+          </div>
+          <div class="problem-title">Problem 1: Count Solutions using Bitmasks</div>
+          <div class="problem-desc">Rewrite the solver to use three bitmasks (<code>columns</code>, <code>diag1</code>, <code>diag2</code>) instead of arrays. What is the new time complexity?</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>Use <code>(cols | d1 | d2)</code> to get all attacked positions at once. Use the bit trick <code>p = ~ (cols | d1 | d2) &amp; ((1 &lt;&lt; N) - 1)</code> to find the rightmost available position. Each recursive step is now O(1) per candidate instead of O(N).</p>
+            <h5>Solution Sketch</h5>
+            <pre>
+void solve(int row, int cols, int d1, int d2) {
+    if (row == N) { ++solutions; return; }
+    int avail = ~(cols | d1 | d2) & ((1 &lt;&lt; N) - 1);
+    while (avail) {
+        int p = avail &amp; -avail;     // rightmost bit
+        avail -= p;
+        solve(row+1, cols|p, (d1|p)&lt;&lt;1, (d2|p)&gt;&gt;1);
+    }
+}</pre>
+            <p>Complexity becomes roughly <strong>O(N!)</strong> but with a much smaller constant — fast enough to count N=14 solutions in milliseconds.</p>
+          </div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-meta">
+            <span class="tag tag-violet">Medium</span>
+            <span class="tag">Backtracking</span>
+          </div>
+          <div class="problem-title">Problem 2: Print Only the First Solution</div>
+          <div class="problem-desc">Modify the backtracking code so it stops immediately after finding the very first valid arrangement.</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>You can <strong>throw</strong> an exception to unwind all recursive calls at once — or use a global <code>bool found</code> flag checked at the top of <code>solve()</code>.</p>
+            <h5>Solution Sketch</h5>
+            <pre>
+bool found = false;
+void solve(int row) {
+    if (found) return;
+    if (row == N) {
+        found = true;
+        printBoard(board);
+        return;
+    }
+    for (int c = 0; c &lt; N; c++)
+        if (isSafe(row, c)) {
+            place(row, c);
+            solve(row + 1);
+            if (found) return;
+            unplace(row, c);
+        }
+}</pre>
+            <p>For a cleaner alternative, wrap the call in <code>try { solve(0); } catch (SolutionFound&amp;) {}</code> where the base case throws.</p>
+          </div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-meta">
+            <span class="tag tag-green">Hard</span>
+            <span class="tag">Geometry</span>
+          </div>
+          <div class="problem-title">Problem 3: No Three Queens Collinear</div>
+          <div class="problem-desc">A variation: place N queens so that <em>no three</em> are collinear. Why does N=2 have no solution? For what N is it possible?</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>The standard N-Queens already forbids <em>queens attacking each other</em>, but two queens are still collinear with a third empty square. For N=2, every pair of squares is the same line, so we cannot avoid collinearity. A known result: solutions exist for all N ≥ 4 except a few small cases (see OEIS A000170).</p>
+            <h5>Geometric Insight</h5>
+            <p>Place queens on the boundary and one in the center. For N=5, try row positions {0,1,3,4,0} mapped to columns. The "no three collinear" constraint is <strong>strictly stronger</strong> than the classical constraint and requires a separate constructive proof.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     SORTING
+     ====================================================== -->
+<section class="section" id="sorting" data-algo="sorting">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="tag tag-cyan">Compare &amp; Swap</span>
+      <h2><span class="gradient-text-2">Sorting</span> Algorithms</h2>
+      <p>Three classic algorithms: <strong>Bubble Sort</strong> (simple O(n²)), <strong>Quick Sort</strong> (divide &amp; conquer), <strong>Merge Sort</strong> (guaranteed O(n log n)).</p>
+    </div>
+
+    <div class="controls fade-up">
+      <div class="sort-tabs">
+        <button class="sort-tab active" data-algo="bubble">Bubble Sort</button>
+        <button class="sort-tab" data-algo="quick">Quick Sort</button>
+        <button class="sort-tab" data-algo="merge">Merge Sort</button>
+      </div>
+      <div class="control-group">
+        <label>Size:</label>
+        <input type="range" id="sort-size" min="5" max="60" value="24" />
+        <span id="sort-size-label">24</span>
+      </div>
+      <div class="control-group">
+        <label>Speed:</label>
+        <input type="range" id="sort-speed" min="1" max="10" value="6" />
+      </div>
+      <button class="btn" id="sort-shuffle">⤬ Shuffle</button>
+      <button class="btn btn-primary" id="sort-play">▶ Play</button>
+      <button class="btn btn-danger" id="sort-reset">↻ Reset</button>
+    </div>
+
+    <div class="nqueens-layout fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">Array Visualizer</div>
+        <div class="bars"></div>
+      </div>
+      <div class="glass-card">
+        <div class="glass-card-title">C++ Source</div>
+        <div class="code-panel"><pre></pre></div>
+      </div>
+    </div>
+
+    <div class="problems fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">Practice Problems</div>
+
+        <div class="problem-card">
+          <div class="problem-meta"><span class="tag tag-green">Easy</span><span class="tag">Stability</span></div>
+          <div class="problem-title">Problem 1: Stable Sort for Duplicates</div>
+          <div class="problem-desc">Among Bubble / Quick / Merge — which ones are <strong>stable</strong> (preserve the relative order of equal elements)? Why?</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>Bubble Sort's <code>if (a[j] &gt; a[j+1])</code> uses strict <code>&gt;</code>, so it swaps only when strictly greater — equal elements keep their order. Quick Sort's partition uses <code>&lt;</code> for the pivot, but it swaps across the boundary in arbitrary order — not stable.</p>
+            <h5>Answer</h5>
+            <p><strong>Stable:</strong> Bubble Sort, Merge Sort. <strong>Unstable:</strong> Quick Sort (can be made stable with extra memory, but not by default).</p>
+          </div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-meta"><span class="tag tag-amber">Medium</span><span class="tag">Worst-case</span></div>
+          <div class="problem-title">Problem 2: Quick Sort's Worst Case</div>
+          <div class="problem-desc">Describe an input that triggers Quick Sort's O(n²) worst case. How do we fix it?</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>What happens when the array is already sorted and we always pick the rightmost element as pivot?</p>
+            <h5>Answer</h5>
+            <p>A sorted (or reverse-sorted) array with the rightmost pivot gives one partition of size 0 and one of size n-1 every level → O(n²). Fixes: <strong>random pivot</strong>, <strong>median-of-three</strong>, or switch to Heap Sort for small subarrays (Introsort).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     GRAPH
+     ====================================================== -->
+<section class="section" id="graph" data-algo="graph">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="tag tag-green">Traversal · Shortest Path</span>
+      <h2><span class="gradient-text">Graph</span> Algorithms</h2>
+      <p>Three fundamental graph algorithms on a weighted 8-node graph: <strong>BFS</strong> (level-by-level), <strong>DFS</strong> (deep recursion), <strong>Dijkstra</strong> (shortest path).</p>
+    </div>
+
+    <div class="controls fade-up">
+      <div class="sort-tabs">
+        <button class="sort-tab active graph-tab" data-algo="bfs">BFS</button>
+        <button class="sort-tab graph-tab" data-algo="dfs">DFS</button>
+        <button class="sort-tab graph-tab" data-algo="dijkstra">Dijkstra</button>
+      </div>
+      <div class="control-group">
+        <label>Start:</label>
+        <select id="graph-start">
+          <option value="0">A (0)</option><option value="1">B (1)</option>
+          <option value="2">C (2)</option><option value="3">D (3)</option>
+          <option value="4">E (4)</option><option value="5">F (5)</option>
+          <option value="6">G (6)</option><option value="7">H (7)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Speed:</label>
+        <input type="range" id="graph-speed" min="1" max="10" value="6" />
+      </div>
+      <button class="btn btn-primary" id="graph-play">▶ Play</button>
+      <button class="btn btn-danger" id="graph-reset">↻ Reset</button>
+    </div>
+
+    <div class="nqueens-layout fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">Graph Canvas</div>
+        <div class="graph-canvas-wrap"><canvas id="graph-canvas"></canvas></div>
+        <div class="graph-legend">
+          <span><span class="legend-dot" style="background:#7c3aed"></span>Start</span>
+          <span><span class="legend-dot" style="background:#10b981"></span>Visited / Settled</span>
+          <span><span class="legend-dot" style="background:#06b6d4"></span>Frontier</span>
+          <span><span class="legend-dot" style="background:#ec4899"></span>Active Edge</span>
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="glass-card-title">C++ Source</div>
+        <div class="code-panel"><pre></pre></div>
+      </div>
+    </div>
+
+    <div class="problems fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">Practice Problems</div>
+
+        <div class="problem-card">
+          <div class="problem-meta"><span class="tag tag-cyan">Easy</span><span class="tag">BFS</span></div>
+          <div class="problem-title">Problem 1: Shortest Path in Unweighted Graph</div>
+          <div class="problem-desc">Why does BFS give the shortest path (in edges) but DFS does not?</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>Think about the order in which nodes are visited. BFS uses a queue (FIFO), DFS uses a stack (LIFO).</p>
+            <h5>Answer</h5>
+            <p>BFS explores in <strong>concentric layers</strong> from the source — the first time we visit a node, we used the minimum number of edges. DFS dives deep and backtracks, so the first visit may use a long detour.</p>
+          </div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-meta"><span class="tag tag-violet">Medium</span><span class="tag">Dijkstra</span></div>
+          <div class="problem-title">Problem 2: Why Dijkstra Fails with Negative Weights</div>
+          <div class="problem-desc">Dijkstra assumes non-negative edge weights. What goes wrong if there is a negative edge?</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>Once Dijkstra marks a node "settled", it never reconsiders it. Could a later path become shorter?</p>
+            <h5>Answer</h5>
+            <p>Yes — a path that goes through a negative edge <em>after</em> settling a node can produce a shorter total. Use the <strong>Bellman-Ford</strong> algorithm instead, which handles negative edges (and detects negative cycles) in O(VE).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     DYNAMIC PROGRAMMING
+     ====================================================== -->
+<section class="section" id="dp" data-algo="dp">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="tag tag-violet">Memoization · Tabulation</span>
+      <h2><span class="gradient-text-2">Dynamic</span> Programming</h2>
+      <p>Two classical DP problems visualized cell-by-cell: <strong>0/1 Knapsack</strong> and <strong>Longest Common Subsequence</strong>. Watch the recurrence fill the table.</p>
+    </div>
+
+    <div class="controls fade-up">
+      <div class="sort-tabs">
+        <button class="sort-tab active dp-tab" data-algo="knapsack">0/1 Knapsack</button>
+        <button class="sort-tab dp-tab" data-algo="lcs">LCS</button>
+      </div>
+      <div class="control-group">
+        <label>Speed:</label>
+        <input type="range" id="dp-speed" min="1" max="10" value="5" />
+      </div>
+      <button class="btn btn-primary" id="dp-play">▶ Play</button>
+      <button class="btn btn-danger" id="dp-reset">↻ Reset</button>
+    </div>
+
+    <div class="nqueens-layout fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">DP Table</div>
+        <div class="dp-table-wrap" style="overflow:auto;"></div>
+      </div>
+      <div class="glass-card">
+        <div class="glass-card-title">C++ Source</div>
+        <div class="code-panel"><pre></pre></div>
+      </div>
+    </div>
+
+    <div class="problems fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">Practice Problems</div>
+
+        <div class="problem-card">
+          <div class="problem-meta"><span class="tag tag-cyan">Easy</span><span class="tag">Knapsack</span></div>
+          <div class="problem-title">Problem 1: Subset Sum</div>
+          <div class="problem-desc">Given numbers and a target T, decide whether some subset sums to T. How is this a special case of 0/1 Knapsack?</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>Set value = weight = a[i], capacity = T. Look only at <code>dp[n][T] &gt; 0</code>.</p>
+            <h5>Answer</h5>
+            <p>If we set <code>value[i] = weight[i]</code> in the knapsack DP, then <code>dp[n][T] &gt; 0</code> iff some subset has total weight exactly T. We can also drop values entirely and use a boolean DP table.</p>
+          </div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-meta"><span class="tag tag-amber">Medium</span><span class="tag">Edit Distance</span></div>
+          <div class="problem-title">Problem 2: Edit Distance (Levenshtein)</div>
+          <div class="problem-desc">Modify the LCS recurrence to compute the minimum number of insertions/deletions/replacements to convert string A into B.</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>If <code>a[i-1] == b[j-1]</code>, no operation is needed. Otherwise, take <code>1 + min(insert, delete, replace)</code>.</p>
+            <h5>Answer</h5>
+            <pre>
+for (int i = 1; i &lt;= m; i++)
+  for (int j = 1; j &lt;= n; j++)
+    if (a[i-1] == b[j-1])
+      dp[i][j] = dp[i-1][j-1];
+    else
+      dp[i][j] = 1 + min({dp[i-1][j],    // delete
+                          dp[i][j-1],    // insert
+                          dp[i-1][j-1]}); // replace</pre>
+            <p>Complexity: <strong>O(m·n)</strong> time and space.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     TOWER OF HANOI
+     ====================================================== -->
+<section class="section" id="hanoi" data-algo="hanoi">
+  <div class="container">
+    <div class="section-header fade-up">
+      <span class="tag tag-amber">Recursion</span>
+      <h2><span class="gradient-text">Tower of Hanoi</span></h2>
+      <p>Move a stack of N disks from peg A to peg C using peg B as auxiliary. The minimum number of moves is <code>2<sup>N</sup> - 1</code>.</p>
+    </div>
+
+    <div class="controls fade-up">
+      <div class="control-group">
+        <label>Disks:</label>
+        <input type="range" id="hanoi-n" min="2" max="10" value="5" />
+        <span id="hanoi-n-label">5</span>
+      </div>
+      <div class="control-group">
+        <label>Speed:</label>
+        <input type="range" id="hanoi-speed" min="1" max="10" value="5" />
+      </div>
+      <button class="btn btn-primary" id="hanoi-play">▶ Play</button>
+      <button class="btn btn-danger" id="hanoi-reset">↻ Reset</button>
+      <div class="stats">
+        <div class="stat"><div class="stat-value" id="hanoi-moves">0</div><div class="stat-label">Moves</div></div>
+        <div class="stat"><div class="stat-value" id="hanoi-formula">31</div><div class="stat-label">2ⁿ − 1</div></div>
+      </div>
+    </div>
+
+    <div class="nqueens-layout fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">Pegs A → B → C</div>
+        <div class="hanoi-stage"></div>
+      </div>
+      <div class="glass-card">
+        <div class="glass-card-title">C++ Source</div>
+        <div class="code-panel"><pre></pre></div>
+      </div>
+    </div>
+
+    <div class="problems fade-up">
+      <div class="glass-card">
+        <div class="glass-card-title">Practice Problems</div>
+
+        <div class="problem-card">
+          <div class="problem-meta"><span class="tag tag-green">Easy</span><span class="tag">Formula</span></div>
+          <div class="problem-title">Problem 1: Moves for N = 10</div>
+          <div class="problem-desc">Without running the program, how many moves does it take to solve Tower of Hanoi with N = 10 disks?</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>Apply the recurrence <code>T(N) = 2·T(N−1) + 1</code> with <code>T(1) = 1</code>. Closed form: <code>T(N) = 2ⁿ − 1</code>.</p>
+            <h5>Answer</h5>
+            <p><strong>1,023 moves.</strong> Even at one move per second, that's ~17 minutes. N = 20 = 1,048,575 moves ≈ 12 days. N = 64 (legend) ≈ 585 billion years.</p>
+          </div>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-meta"><span class="tag tag-violet">Medium</span><span class="tag">4-Peg Variant</span></div>
+          <div class="problem-title">Problem 2: Reve's Puzzle (4 Pegs)</div>
+          <div class="problem-desc">What if you have 4 pegs instead of 3? This is the Frame–Stewart problem — find a better algorithm.</div>
+          <div class="problem-actions">
+            <button class="btn btn-sm" onclick="toggleProblem(this)">Show Hint</button>
+            <button class="btn btn-sm btn-primary" onclick="toggleAnswer(this)">Show Solution</button>
+          </div>
+          <div class="problem-content">
+            <h5>Hint</h5>
+            <p>Move the top k disks to a spare peg using all 4 pegs, then move the remaining N−k disks with 3 pegs, then move the k disks on top of them with 4 pegs.</p>
+            <h5>Answer</h5>
+            <p>Frame–Stewart: choose <code>k ≈ N − √(2N+1) + 1</code>. Best known formula grows like <code>O(2^√N)</code> instead of <code>O(2^N)</code>. Exact optimum is still an open problem for arbitrary N.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================
+     FOOTER
+     ====================================================== -->
+<footer class="footer">
+  <div class="container">
+    <p>Built with vanilla HTML, CSS &amp; JavaScript — no frameworks. All algorithms ship with C++17 reference implementations.</p>
+    <p style="margin-top:16px; font-size:13px; color:var(--text-faint);">
+      To run the C++ sources: <code>g++ -std=c++17 cpp/&lt;file&gt;.cpp -o &lt;name&gt; &amp;&amp; ./&lt;name&gt;</code>
+    </p>
+    <p style="margin-top:8px; font-size:12px; color:var(--text-faint);">
+      ♛ <span class="gradient-text" style="font-weight:600;">Add a new algorithm</span> by dropping a new <code>&lt;section data-algo="..."&gt;</code>, a <code>js/foo.js</code> that registers via <code>AlgoRegistry["..."](root)</code>, and a <code>cpp/foo.cpp</code> reference.
+    </p>
+  </div>
+</footer>
+
+<!-- ======================================================
+     SCRIPTS — load order: each registers with AlgoRegistry.
+     ====================================================== -->
+<script src="js/nqueens.js"></script>
+<script src="js/sorting.js"></script>
+<script src="js/graph.js"></script>
+<script src="js/dp.js"></script>
+<script src="js/hanoi.js"></script>
+
+<script>
+/* =========================================================
+   GLOBAL WIRING — runs after all visualizers register.
+   ========================================================= */
+(function () {
+  // Helper: toggle problem hint / answer reveal
+  window.toggleProblem = function (btn) {
+    const card = btn.closest('.problem-card');
+    const contents = card.querySelectorAll('.problem-content');
+    const target = contents[0];
+    if (target) target.classList.toggle('open');
+    btn.textContent = target.classList.contains('open') ? 'Hide Hint' : 'Show Hint';
+  };
+  window.toggleAnswer = function (btn) {
+    const card = btn.closest('.problem-card');
+    const contents = card.querySelectorAll('.problem-content');
+    const target = contents[contents.length - 1];
+    if (target) target.classList.toggle('open');
+    btn.textContent = target.classList.contains('open') ? 'Hide Solution' : 'Show Solution';
+  };
+
+  // IntersectionObserver — init each section lazily when scrolled into view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const sec = entry.target;
+        const name = sec.dataset.algo;
+        if (name && window.AlgoRegistry && window.AlgoRegistry[name]) {
+          window.AlgoRegistry[name](sec);
+          sec.dataset.algo += '-ready';   // prevent re-init
+        }
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('[data-algo]').forEach(el => observer.observe(el));
+
+  // Top nav active link on scroll
+  const navLinks = document.querySelectorAll('.topnav a');
+  const sectionIds = ['hero', 'nqueens', 'sorting', 'graph', 'dp', 'hanoi'];
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const id = entry.target.id;
+        const link = document.querySelector('.topnav a[href="#' + id + '"]');
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  sectionIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) navObserver.observe(el);
+  });
+})();
+</script>
+
+</body>
+</html>
